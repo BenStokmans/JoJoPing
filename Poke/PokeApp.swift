@@ -3,12 +3,12 @@ import SwiftUI
 import UserNotifications
 
 @main
-struct JoJoPingApp: App {
+struct PokeApp: App {
     @StateObject private var mp = MultipeerManager()
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
     var body: some Scene {
-        MenuBarExtra("JoJoPing", systemImage: "dot.radiowaves.left.and.right") {
+        MenuBarExtra("Poke", systemImage: "dot.radiowaves.left.and.right") {
             PeersMenu()
                 .environmentObject(mp)
         }

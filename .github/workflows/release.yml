@@ -1,4 +1,4 @@
-name: Build, Test and Release JoJoPing
+name: Build, Test and Release Poke
 
 on:
     push:
@@ -25,22 +25,22 @@ jobs:
               with:
                   node-version: '20'
                   cache: 'npm'
-                  cache-dependency-path: 'jojoping-raycast/package-lock.json'
+                  cache-dependency-path: 'poke-raycast/package-lock.json'
 
             - name: Install Raycast Extension Dependencies
-              working-directory: jojoping-raycast
+              working-directory: poke-raycast
               run: npm ci
 
             - name: Build Swift App
               run: |
                   mkdir -p build
                   xcodebuild \
-                    -project JoJoPing.xcodeproj \
-                    -scheme JoJoPing \
+                    -project Poke.xcodeproj \
+                    -scheme Poke \
                     -configuration Release \
                     -destination "generic/platform=macOS" \
                     -derivedDataPath build/DerivedData \
-                    -archivePath build/JoJoPing.xcarchive \
+                    -archivePath build/Poke.xcarchive \
                     clean archive \
                     CODE_SIGN_STYLE=Manual \
                     CODE_SIGNING_ALLOWED=NO \
@@ -50,16 +50,16 @@ jobs:
             - name: Export App from Archive
               run: |
                   mkdir -p build/Release
-                  cp -R build/JoJoPing.xcarchive/Products/Applications/JoJoPing.app build/Release/
+                  cp -R build/Poke.xcarchive/Products/Applications/Poke.app build/Release/
 
             - name: Build Raycast Extension
-              working-directory: jojoping-raycast
+              working-directory: poke-raycast
               run: npm run build
 
             - name: Upload Swift App as Artifact
               uses: actions/upload-artifact@v4
               with:
-                  name: jojoping-app
+                  name: poke-app
                   path: build/Release/
 
             - name: Upload Raycast Extension as Artifact
@@ -67,10 +67,10 @@ jobs:
               with:
                   name: raycast-extension
                   path: |
-                      jojoping-raycast/package.json
-                      jojoping-raycast/raycast-env.d.ts
-                      jojoping-raycast/src/
-                      jojoping-raycast/assets/
+                      poke-raycast/package.json
+                      poke-raycast/raycast-env.d.ts
+                      poke-raycast/src/
+                      poke-raycast/assets/
 
     create-release:
         name: Create release
@@ -122,7 +122,7 @@ jobs:
             - name: Retrieve Swift App from artifact
               uses: actions/download-artifact@v4
               with:
-                  name: jojoping-app
+                  name: poke-app
                   path: build/Release/
 
             - name: Get Latest Tag
@@ -136,9 +136,9 @@ jobs:
                   mkdir -p build/Release
                   
                   # Check if we have the app from the artifact
-                  if [[ -d "build/Release/JoJoPing.app" ]]; then
-                      echo "Using app from artifact"
-                      APP_PATH="build/Release/JoJoPing.app"
+                  if [[ -d "build/Release/Poke.app" ]]; then
+                    echo "Using app from artifact"
+                    APP_PATH="build/Release/Poke.app"
                   else
                       echo "App not found in expected location, listing contents:"
                       find build -name "*.app" -type d || true
@@ -158,7 +158,7 @@ jobs:
                   
                   echo "Updated app version to: $VERSION"
                   
-                  DMG_NAME="JoJoPing-${VERSION}.dmg"
+                  DMG_NAME="Poke-${VERSION}.dmg"
                   DMG_PATH="build/$DMG_NAME"
                   
                   STAGE="build/dmg_stage"
@@ -172,13 +172,13 @@ jobs:
                   cp -R "$APP_PATH" "$STAGE/"
                   
                   # Ensure executable has proper permissions
-                  chmod +x "$STAGE/JoJoPing.app/Contents/MacOS/JoJoPing"
+                  chmod +x "$STAGE/Poke.app/Contents/MacOS/Poke"
                   
                   # Create the DMG
                   echo "Creating DMG: $DMG_PATH"
                   rm -f "$DMG_PATH"
                   hdiutil create \
-                    -volname "JoJoPing" \
+                    -volname "Poke" \
                     -srcfolder "$STAGE" \
                     -fs HFS+J \
                     -format UDZO \
@@ -220,12 +220,12 @@ jobs:
             - name: Create Raycast Extension ZIP
               run: |
                   cd raycast-dist
-                  zip -r ../jojoping-raycast-${{ steps.previoustag.outputs.tag }}.zip .
+                  zip -r ../poke-raycast-${{ steps.previoustag.outputs.tag }}.zip .
 
             - name: Upload Raycast Extension to release
               uses: softprops/action-gh-release@v2
               with:
-                  files: jojoping-raycast-${{ steps.previoustag.outputs.tag }}.zip
+                  files: poke-raycast-${{ steps.previoustag.outputs.tag }}.zip
                   token: ${{ secrets.GITHUB_TOKEN }}
                   tag_name: ${{ steps.previoustag.outputs.tag }}
                   append_body: true

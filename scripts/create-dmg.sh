@@ -8,12 +8,12 @@ cd "$ROOT_DIR"
 # ================================
 # CONFIG
 # ================================
-SCHEME="JoJoPing"                        # Xcode scheme name
-PROJECT="JoJoPing.xcodeproj"             # .xcodeproj filename
+SCHEME="Poke"                        # Xcode scheme name
+PROJECT="Poke.xcodeproj"             # .xcodeproj filename
 CONFIGURATION="Release"                  # Build configuration
 DESTINATION="generic/platform=macOS"    # Build destination
-BUNDLE_ID="com.bstokmans.JoJoPing"       # Bundle identifier
-APP_NAME="JoJoPing"                      # Final .app name (without .app)
+BUNDLE_ID="com.bstokmans.Poke"       # Bundle identifier
+APP_NAME="Poke"                      # Final .app name (without .app)
 OUTPUT_DIR="$ROOT_DIR/build"             # Where to put artifacts
 
 # Note: Notarization is not covered here; can be added later if needed.

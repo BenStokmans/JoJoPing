@@ -77,8 +77,8 @@ final class RaycastHTTPServer {
             return Self.json(payload)
         }
 
-        // Ping
-        server.POST["/v1/ping"] = { [weak self] req in
+        // Poke
+        server.POST["/v1/poke"] = { [weak self] req in
             guard let self, let manager = self.manager else { return Self.json(["ok": false], status: 500) }
             guard let data = req.bodyData(),
                   let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
@@ -92,7 +92,7 @@ final class RaycastHTTPServer {
             var errorStr: String?
             Task { @MainActor in
                 if let peer = manager.nearbyPeers.first(where: { $0.displayName == toName }) {
-                    delivered = await manager.trySendPing(to: peer, note: note)
+                    delivered = await manager.trySendPoke(to: peer, note: note)
                 } else {
                     errorStr = "peer not found or offline"
                 }

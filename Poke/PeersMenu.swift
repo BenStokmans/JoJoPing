@@ -18,7 +18,7 @@ struct PeersMenu: View {
                     HStack {
                         VStack(alignment: .leading) {
                             Text(peer.displayName).lineLimit(1)
-                            let status = mp.lastPingStatus[peer.displayName]
+                            let status = mp.lastPokeStatus[peer.displayName]
                             HStack(spacing: 6) {
                                 // Online indicator
                                 Circle()
@@ -43,9 +43,9 @@ struct PeersMenu: View {
                             }
                         }
                         Spacer()
-                        Button("Ping") {
+                        Button("Poke") {
                             Task {
-                                let delivered = await mp.trySendPing(to: peer, note: note)
+                                let delivered = await mp.trySendPoke(to: peer, note: note)
                                 if delivered {
                                     note = "" // Clear the text field after confirmed delivery
                                 } else {

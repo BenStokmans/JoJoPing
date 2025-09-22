@@ -36,8 +36,8 @@ export async function getPeers() {
   };
 }
 
-export async function sendPing(to: string, note?: string) {
-  const r = await fetch(`${BASE}/v1/ping`, {
+export async function sendPoke(to: string, note?: string) {
+  const r = await fetch(`${BASE}/v1/poke`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ to, note: note ?? "" }),

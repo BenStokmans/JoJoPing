@@ -12,7 +12,7 @@ struct PeerHistory: Codable {
 
 @MainActor
 final class MultipeerManager: NSObject, ObservableObject {
-    private let serviceType = "cowork-ping"
+    private let serviceType = "poke-service"
     let myPeerID: MCPeerID
 
     private var session: MCSession!
@@ -24,28 +24,28 @@ final class MultipeerManager: NSObject, ObservableObject {
     @Published private(set) var peerHistory: [PeerHistory] = []
     @Published private(set) var isVisible: Bool = true
 
-    enum PingDeliveryState {
+    enum PokeDeliveryState {
         case sending
         case delivered
         case failed
     }
 
-    // Last ping delivery status per peer (keyed by displayName)
-    @Published private(set) var lastPingStatus: [String: PingDeliveryState] = [:]
+    // Last poke delivery status per peer (keyed by displayName)
+    @Published private(set) var lastPokeStatus: [String: PokeDeliveryState] = [:]
 
     // MARK: - Delivery/Acknowledgement
 
     // Store continuations waiting for ACKs keyed by message ID
     private var pendingAcks: [String: CheckedContinuation<Void, Error>] = [:]
-    // Track seen ping IDs to avoid duplicate notifications on retries
-    private var seenPingIDs: Set<String> = []
+    // Track seen poke IDs to avoid duplicate notifications on retries
+    private var seenPokeIDs: Set<String> = []
     private let ackTimeout: TimeInterval = 3.0
     private let maxAckRetries: Int = 2
 
     private let historyTimeLimit: TimeInterval = 24 * 60 * 60 // 24 hours
     private let userDefaults = UserDefaults.standard
-    private let peerHistoryKey = "JoJoPing_PeerHistory"
-    private let visiblePrefKey = "JoJoPing_VisiblePreference"
+    private let peerHistoryKey = "Poke_PeerHistory"
+    private let visiblePrefKey = "Poke_VisiblePreference"
 
     private func log(_ items: @autoclosure () -> Any,
                      function: StaticString = #function,
@@ -162,22 +162,22 @@ final class MultipeerManager: NSObject, ObservableObject {
         browser.invitePeer(peer, to: session, withContext: nil, timeout: 10)
     }
 
-    func trySendPing(to peer: MCPeerID, note: String?) async -> Bool {
+    func trySendPoke(to peer: MCPeerID, note: String?) async -> Bool {
         // Ensure message is processed by recipient using app-level ACKs with retry
-        lastPingStatus[peer.displayName] = .sending
-        let delivered = await sendPingEnsuringReceipt(to: peer, note: note)
-        lastPingStatus[peer.displayName] = delivered ? .delivered : .failed
+        lastPokeStatus[peer.displayName] = .sending
+        let delivered = await sendPokeEnsuringReceipt(to: peer, note: note)
+        lastPokeStatus[peer.displayName] = delivered ? .delivered : .failed
         return delivered
     }
 
-    private func sendPing(to peer: MCPeerID, note: String?, id: String) throws {
+    private func sendPoke(to peer: MCPeerID, note: String?, id: String) throws {
         // On MainActor, safe to touch session
         guard let session = session, session.connectedPeers.contains(peer) else {
-            throw NSError(domain: "Ping", code: 1,
+            throw NSError(domain: "Poke", code: 1,
                           userInfo: [NSLocalizedDescriptionKey: "Peer not connected"])
         }
         let payload: [String: Any] = [
-            "type": "ping",
+            "type": "poke",
             "from": myPeerID.displayName,
             "timestamp": Date().timeIntervalSince1970,
             "note": note ?? "",
@@ -187,7 +187,7 @@ final class MultipeerManager: NSObject, ObservableObject {
         try session.send(data, toPeers: [peer], with: .reliable)
     }
 
-    private func sendPingEnsuringReceipt(to peer: MCPeerID, note: String?) async -> Bool {
+    private func sendPokeEnsuringReceipt(to peer: MCPeerID, note: String?) async -> Bool {
         // If we're hidden or transport is down, fail fast
         guard isVisible, let _ = session else { return false }
         let messageID = UUID().uuidString
@@ -199,8 +199,8 @@ final class MultipeerManager: NSObject, ObservableObject {
                     invite(peer)
                     try? await Task.sleep(nanoseconds: 700_000_000)
                 }
-                try sendPing(to: peer, note: note, id: messageID)
-                log("Sent ping id=\(messageID) to \(peer.displayName) (attempt \(attempt + 1))")
+                try sendPoke(to: peer, note: note, id: messageID)
+                log("Sent poke id=\(messageID) to \(peer.displayName) (attempt \(attempt + 1))")
                 // Wait for ACK with timeout
                 try await awaitAck(for: messageID, timeout: ackTimeout)
                 log("ACK received for id=\(messageID) from \(peer.displayName)")
@@ -230,7 +230,7 @@ final class MultipeerManager: NSObject, ObservableObject {
                 await MainActor.run {
                     guard let self = self else { return }
                     if let cont = self.pendingAcks.removeValue(forKey: id) {
-                        cont.resume(throwing: NSError(domain: "PingACK", code: 2, userInfo: [NSLocalizedDescriptionKey: "ACK timeout"]))
+                        cont.resume(throwing: NSError(domain: "PokeACK", code: 2, userInfo: [NSLocalizedDescriptionKey: "ACK timeout"]))
                     }
                 }
             }
@@ -254,9 +254,9 @@ final class MultipeerManager: NSObject, ObservableObject {
         }
     }
 
-    private func notifyPing(from name: String, note: String) {
+    private func notifyPoke(from name: String, note: String) {
         let content = UNMutableNotificationContent()
-        content.title = "Ping from \(name)"
+        content.title = "Poke from \(name)"
         if !note.isEmpty { content.body = note }
         content.sound = .default
         let request = UNNotificationRequest(
@@ -354,27 +354,27 @@ extension MultipeerManager: MCSessionDelegate {
                 }
 
                 switch type {
-                case "ping":
+                case "poke":
                     let note = (json["note"] as? String) ?? ""
                     let messageID = (json["id"] as? String) ?? ""
 
-                    // De-duplicate pings by message ID to avoid duplicate notifications
+                    // De-duplicate pokes by message ID to avoid duplicate notifications
                     var shouldNotify = true
                     if !messageID.isEmpty {
-                        if self.seenPingIDs.contains(messageID) {
+                        if self.seenPokeIDs.contains(messageID) {
                             shouldNotify = false
                         } else {
-                            self.seenPingIDs.insert(messageID)
+                            self.seenPokeIDs.insert(messageID)
                             // Best-effort trimming to keep memory bounded
-                            if self.seenPingIDs.count > 500 {
-                                self.seenPingIDs.remove(self.seenPingIDs.first!)
+                            if self.seenPokeIDs.count > 500 {
+                                self.seenPokeIDs.remove(self.seenPokeIDs.first!)
                             }
                         }
                     }
 
                     if shouldNotify {
                         NSApp.requestUserAttention(.informationalRequest)
-                        self.notifyPing(from: peerID.displayName, note: note)
+                        self.notifyPoke(from: peerID.displayName, note: note)
                     }
 
                     // Always send ACK back (even if duplicate) when ID is present

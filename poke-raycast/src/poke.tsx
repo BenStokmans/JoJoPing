@@ -1,11 +1,11 @@
 import { Action, ActionPanel, Form, List, showHUD, useNavigation } from "@raycast/api";
 import { useEffect, useState } from "react";
-import { getPeers, sendPing, isHealthy, NearbyPeer } from "./api";
+import { getPeers, sendPoke, isHealthy, NearbyPeer } from "./api";
 
 // Single command flow:
 // 1) Show list of peers
 // 2) On select, show a small form to input optional note
-// 3) Send ping and show HUD
+// 3) Send poke and show HUD
 
 export default function Command() {
   const [healthy, setHealthy] = useState<boolean | null>(null);
@@ -46,8 +46,8 @@ export default function Command() {
     return (
       <List searchBarPlaceholder="Server unavailable" filtering={false} isLoading={loading}>
         <List.EmptyView
-          title="JoJoPing not reachable"
-          description="Make sure the JoJoPing app is running."
+          title="Poke not reachable"
+          description="Make sure the Poke app is running."
           actions={
             <ActionPanel>
               <Action
@@ -78,7 +78,7 @@ export default function Command() {
 
   if (!selected) {
     return (
-      <List isLoading={loading} searchBarPlaceholder="Select a peer to ping">
+      <List isLoading={loading} searchBarPlaceholder="Select a peer to poke">
         {peers.map((p) => (
           <List.Item
             key={p.id}
@@ -86,7 +86,7 @@ export default function Command() {
             subtitle="Online"
             actions={
               <ActionPanel>
-                <Action title="Ping" onAction={() => setSelected(p)} />
+                <Action title="Poke" onAction={() => setSelected(p)} />
               </ActionPanel>
             }
           />
@@ -95,14 +95,14 @@ export default function Command() {
     );
   }
 
-  return <PingForm peer={selected} onDone={() => setSelected(null)} />;
+  return <PokeForm peer={selected} onDone={() => setSelected(null)} />;
 }
 
-function PingForm({ peer, onDone }: { peer: NearbyPeer; onDone: () => void }) {
+function PokeForm({ peer, onDone }: { peer: NearbyPeer; onDone: () => void }) {
   const nav = useNavigation();
   async function onSubmit(values: { note?: string }) {
-    const res = await sendPing(peer.id, values.note);
-    await showHUD(res.delivered ? `Pinged ${peer.displayName}` : `Ping to ${peer.displayName} failed`);
+    const res = await sendPoke(peer.id, values.note);
+    await showHUD(res.delivered ? `Poked ${peer.displayName}` : `Poke to ${peer.displayName} failed`);
     nav.pop();
     onDone();
   }

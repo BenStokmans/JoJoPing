@@ -12,14 +12,14 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		E77130782E7CA6BA00DD959B /* JoJoPing.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JoJoPing.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E77130782E7CA6BA00DD959B /* Poke.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Poke.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E771308D2E7CA75500DD959B /* MultipeerConnectivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MultipeerConnectivity.framework; path = System/Library/Frameworks/MultipeerConnectivity.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		E771307A2E7CA6BA00DD959B /* JoJoPing */ = {
+		E771307A2E7CA6BA00DD959B /* Poke */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = JoJoPing;
+			path = Poke;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -40,7 +40,7 @@
 		E771306F2E7CA6BA00DD959B = {
 			isa = PBXGroup;
 			children = (
-				E771307A2E7CA6BA00DD959B /* JoJoPing */,
+				E771307A2E7CA6BA00DD959B /* Poke */,
 				E771308C2E7CA75500DD959B /* Frameworks */,
 				E77130792E7CA6BA00DD959B /* Products */,
 			);
@@ -49,7 +49,7 @@
 		E77130792E7CA6BA00DD959B /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				E77130782E7CA6BA00DD959B /* JoJoPing.app */,
+				E77130782E7CA6BA00DD959B /* Poke.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -65,9 +65,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		E77130772E7CA6BA00DD959B /* JoJoPing */ = {
+		E77130772E7CA6BA00DD959B /* Poke */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = E77130832E7CA6BB00DD959B /* Build configuration list for PBXNativeTarget "JoJoPing" */;
+			buildConfigurationList = E77130832E7CA6BB00DD959B /* Build configuration list for PBXNativeTarget "Poke" */;
 			buildPhases = (
 				E77130742E7CA6BA00DD959B /* Sources */,
 				E77130752E7CA6BA00DD959B /* Frameworks */,
@@ -78,14 +78,14 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				E771307A2E7CA6BA00DD959B /* JoJoPing */,
+				E771307A2E7CA6BA00DD959B /* Poke */,
 			);
-			name = JoJoPing;
+			name = Poke;
 			packageProductDependencies = (
 				E7569A392E7FFFB500518734 /* Swifter */,
 			);
-			productName = JoJoPing;
-			productReference = E77130782E7CA6BA00DD959B /* JoJoPing.app */;
+			productName = Poke;
+			productReference = E77130782E7CA6BA00DD959B /* Poke.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -103,7 +103,7 @@
 					};
 				};
 			};
-			buildConfigurationList = E77130732E7CA6BA00DD959B /* Build configuration list for PBXProject "JoJoPing" */;
+			buildConfigurationList = E77130732E7CA6BA00DD959B /* Build configuration list for PBXProject "Poke" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -120,7 +120,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				E77130772E7CA6BA00DD959B /* JoJoPing */,
+				E77130772E7CA6BA00DD959B /* Poke */,
 			);
 		};
 /* End PBXProject section */
@@ -291,7 +291,7 @@
 				ENABLE_RESOURCE_ACCESS_USB = NO;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = JoJoPing;
+				INFOPLIST_KEY_CFBundleDisplayName = Poke;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -299,7 +299,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 15.6;
 				MARKETING_VERSION = 1.1.1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.bstokmans.JoJoPing;
+				PRODUCT_BUNDLE_IDENTIFIER = com.bstokmans.Poke;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -336,7 +336,7 @@
 				ENABLE_RESOURCE_ACCESS_USB = NO;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = JoJoPing;
+				INFOPLIST_KEY_CFBundleDisplayName = Poke;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -344,7 +344,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 15.6;
 				MARKETING_VERSION = 1.1.1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.bstokmans.JoJoPing;
+				PRODUCT_BUNDLE_IDENTIFIER = com.bstokmans.Poke;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -359,7 +359,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		E77130732E7CA6BA00DD959B /* Build configuration list for PBXProject "JoJoPing" */ = {
+		E77130732E7CA6BA00DD959B /* Build configuration list for PBXProject "Poke" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E77130812E7CA6BB00DD959B /* Debug */,
@@ -368,7 +368,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E77130832E7CA6BB00DD959B /* Build configuration list for PBXNativeTarget "JoJoPing" */ = {
+		E77130832E7CA6BB00DD959B /* Build configuration list for PBXNativeTarget "Poke" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E77130842E7CA6BB00DD959B /* Debug */,

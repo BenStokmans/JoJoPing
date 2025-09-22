@@ -1,8 +1,8 @@
 {
   "$schema": "https://www.raycast.com/schemas/extension.json",
-  "name": "jojoping-raycast",
-  "title": "JoJoPing",
-  "description": "Control JoJoPing peers and visibility from Raycast via a local HTTP bridge.",
+  "name": "poke-raycast",
+  "title": "Poke",
+  "description": "Control Poke peers and visibility from Raycast via a local HTTP bridge.",
   "icon": "extension-icon.png",
   "author": "benstokmans",
   "platforms": [
@@ -15,9 +15,9 @@
   ],
   "commands": [
     {
-      "name": "ping",
-      "title": "Ping",
-      "description": "Select a peer, add an optional note, and send ping",
+      "name": "poke",
+      "title": "Poke",
+      "description": "Select a peer, add an optional note, and send poke",
       "mode": "view"
     }
   ],
