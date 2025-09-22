@@ -178,6 +178,9 @@ jobs:
                   # Copy app into staging
                   cp -R "$APP_PATH" "$STAGE/"
                   
+                  # Ensure executable has proper permissions
+                  chmod +x "$STAGE/JoJoPing.app/Contents/MacOS/JoJoPing"
+                  
                   # Create the DMG
                   echo "Creating DMG: $DMG_PATH"
                   rm -f "$DMG_PATH"
