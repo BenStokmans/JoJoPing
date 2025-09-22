@@ -10,6 +10,10 @@
     "Windows"
   ],
   "license": "MIT",
+  "categories": [
+    "Communication",
+    "Productivity"
+  ],
   "commands": [
     {
       "name": "ping",
