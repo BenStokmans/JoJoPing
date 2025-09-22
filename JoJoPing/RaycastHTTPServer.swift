@@ -1,6 +1,6 @@
 import Foundation
-import Swifter
 import MultipeerConnectivity
+import Swifter
 
 final class RaycastHTTPServer {
     static let port: UInt16 = 42123
@@ -31,7 +31,7 @@ final class RaycastHTTPServer {
     private func setupRoutes() {
         // Health
         server["/v1/health"] = { _ in
-            return Self.json(["ok": true])
+            Self.json(["ok": true])
         }
 
         // Status
@@ -82,7 +82,8 @@ final class RaycastHTTPServer {
             guard let self, let manager = self.manager else { return Self.json(["ok": false], status: 500) }
             guard let data = req.bodyData(),
                   let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-                  let toName = obj["to"] as? String else {
+                  let toName = obj["to"] as? String
+            else {
                 return Self.json(["ok": false, "error": "missing 'to'"], status: 400)
             }
             let note = (obj["note"] as? String) ?? ""
@@ -107,7 +108,8 @@ final class RaycastHTTPServer {
             guard let self, let manager = self.manager else { return Self.json(["ok": false], status: 500) }
             guard let data = req.bodyData(),
                   let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-                  let visible = obj["visible"] as? Bool else {
+                  let visible = obj["visible"] as? Bool
+            else {
                 return Self.json(["ok": false, "error": "missing 'visible' bool"], status: 400)
             }
             let sema = DispatchSemaphore(value: 0)
@@ -124,14 +126,13 @@ final class RaycastHTTPServer {
         let data = (try? JSONSerialization.data(withJSONObject: obj)) ?? ("{}".data(using: String.Encoding.utf8) ?? Data())
         return .raw(status, status == 200 ? "OK" : "",
                     ["Content-Type": "application/json; charset=utf-8",
-                     "Cache-Control": "no-store"],
-                    { writer in try writer.write(data) })
+                     "Cache-Control": "no-store"]) { writer in try writer.write(data) }
     }
 }
 
 private extension HttpRequest {
     func bodyData() -> Data? {
-        guard !self.body.isEmpty else { return nil }
-        return Data(self.body)
+        guard !body.isEmpty else { return nil }
+        return Data(body)
     }
 }

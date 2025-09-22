@@ -62,10 +62,10 @@ final class MultipeerManager: NSObject, ObservableObject {
         super.init()
 
         createTransport()
-    // Start local HTTP server for Raycast integration
-    let server = RaycastHTTPServer(manager: self)
-    self.httpServer = server
-    server.start()
+        // Start local HTTP server for Raycast integration
+        let server = RaycastHTTPServer(manager: self)
+        httpServer = server
+        server.start()
 
         loadPeerHistory()
 
