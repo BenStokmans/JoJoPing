@@ -20,21 +20,16 @@ jobs:
               with:
                   xcode-version: latest-stable
 
-            - name: Setup pnpm
-              uses: pnpm/action-setup@v4
-              with:
-                  version: 10
-
             - name: Setup Node.js
               uses: actions/setup-node@v4
               with:
                   node-version: '20'
-                  cache: 'pnpm'
-                  cache-dependency-path: 'jojoping-raycast/pnpm-lock.yaml'
+                  cache: 'npm'
+                  cache-dependency-path: 'jojoping-raycast/package-lock.json'
 
             - name: Install Raycast Extension Dependencies
               working-directory: jojoping-raycast
-              run: pnpm install --frozen-lockfile
+              run: npm ci
 
             - name: Build Swift App
               run: |
@@ -59,7 +54,7 @@ jobs:
 
             - name: Build Raycast Extension
               working-directory: jojoping-raycast
-              run: pnpm run build
+              run: npm run build
 
             - name: Upload Swift App as Artifact
               uses: actions/upload-artifact@v4
@@ -91,18 +86,13 @@ jobs:
               with:
                   fetch-depth: 0
 
-            - name: Setup pnpm
-              uses: pnpm/action-setup@v4
-              with:
-                  version: 10
-
             - name: Setup Node.js
               uses: actions/setup-node@v4
               with:
                   node-version: '20'
 
             - name: Install Dependencies
-              run: pnpm install --ignore-scripts
+              run: npm ci --ignore-scripts
 
             - name: Configure Git user
               run: |
@@ -111,7 +101,7 @@ jobs:
 
             - name: Create and Publish Release
               id: create-release
-              run: pnpm run release
+              run: npm run release
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
