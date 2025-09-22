@@ -18,7 +18,12 @@ export default function Command() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (err) return <List searchBarPlaceholder="Error" filtering={false}><List.EmptyView title={err} /></List>;
+  if (err)
+    return (
+      <List searchBarPlaceholder="Error" filtering={false}>
+        <List.EmptyView title={err} />
+      </List>
+    );
   return (
     <List isLoading={loading} searchBarPlaceholder="Search peers">
       <List.Section title="Nearby">

@@ -17,7 +17,13 @@ export default function Command() {
   }
 
   return (
-    <Form actions={<ActionPanel><Action.SubmitForm title="Send Ping" onSubmit={onSubmit} /></ActionPanel>}>
+    <Form
+      actions={
+        <ActionPanel>
+          <Action.SubmitForm title="Send Ping" onSubmit={onSubmit} />
+        </ActionPanel>
+      }
+    >
       <Form.Dropdown id="to" title="Peer">
         {peers.map((p) => (
           <Form.Dropdown.Item key={p.id} value={p.id} title={p.displayName} />

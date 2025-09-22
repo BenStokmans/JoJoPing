@@ -35,7 +35,12 @@ export default function Command() {
     })();
   }, []);
 
-  if (err) return <List searchBarPlaceholder="Error" filtering={false}><List.EmptyView title={err} /></List>;
+  if (err)
+    return (
+      <List searchBarPlaceholder="Error" filtering={false}>
+        <List.EmptyView title={err} />
+      </List>
+    );
 
   if (healthy === false) {
     return (
@@ -102,7 +107,13 @@ function PingForm({ peer, onDone }: { peer: NearbyPeer; onDone: () => void }) {
     onDone();
   }
   return (
-    <Form actions={<ActionPanel><Action.SubmitForm title={`Send to ${peer.displayName}`} onSubmit={onSubmit} /></ActionPanel>}>
+    <Form
+      actions={
+        <ActionPanel>
+          <Action.SubmitForm title={`Send to ${peer.displayName}`} onSubmit={onSubmit} />
+        </ActionPanel>
+      }
+    >
       <Form.Description title="Peer" text={peer.displayName} />
       <Form.TextArea id="note" title="Note" placeholder="Optional note" enableMarkdown={false} autoFocus />
     </Form>

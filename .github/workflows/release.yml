@@ -71,7 +71,11 @@ jobs:
               uses: actions/upload-artifact@v4
               with:
                   name: raycast-extension
-                  path: jojoping-raycast/dist/
+                  path: |
+                      jojoping-raycast/package.json
+                      jojoping-raycast/raycast-env.d.ts
+                      jojoping-raycast/src/
+                      jojoping-raycast/assets/
 
     create-release:
         name: Create release
@@ -96,7 +100,6 @@ jobs:
               uses: actions/setup-node@v4
               with:
                   node-version: '20'
-                  cache: 'pnpm'
 
             - name: Install Dependencies
               run: pnpm install --ignore-scripts
