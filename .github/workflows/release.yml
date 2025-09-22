@@ -91,6 +91,12 @@ jobs:
               with:
                   node-version: '20'
 
+            - name: Install Semantic Release
+              run: npm install semantic-release@24
+
+            - name: Install Semantic Release Dependencies
+              run: npm install @semantic-release/commit-analyzer@13 @semantic-release/release-notes-generator@14 @semantic-release/github@10 conventional-changelog-conventionalcommits@8
+
             - name: Configure Git user
               run: |
                   git config --global user.name "github-actions[bot]"
