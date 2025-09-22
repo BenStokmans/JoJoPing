@@ -79,7 +79,3 @@ When a ping is received, the app requests attention and shows a user notificatio
 ## Contributing
 
 Small fixes and improvements welcome. Open an issue or PR with a concise description of the change.
-
-## License
-
-This project is licensed under the GLWT (Good Luck With That) Public License. See [LICENSE.md](LICENSE.md) for the full text. You can do whatever you want with this code at your own risk.

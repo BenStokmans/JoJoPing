@@ -18,6 +18,7 @@ final class MultipeerManager: NSObject, ObservableObject {
     private var session: MCSession!
     private var advertiser: MCNearbyServiceAdvertiser!
     private var browser: MCNearbyServiceBrowser!
+    private var httpServer: RaycastHTTPServer?
 
     @Published private(set) var nearbyPeers: [MCPeerID] = []
     @Published private(set) var peerHistory: [PeerHistory] = []
@@ -61,6 +62,10 @@ final class MultipeerManager: NSObject, ObservableObject {
         super.init()
 
         createTransport()
+    // Start local HTTP server for Raycast integration
+    let server = RaycastHTTPServer(manager: self)
+    self.httpServer = server
+    server.start()
 
         loadPeerHistory()
 
@@ -94,6 +99,7 @@ final class MultipeerManager: NSObject, ObservableObject {
 
     deinit {
         NotificationCenter.default.removeObserver(self)
+        httpServer?.stop()
     }
 
     private func createTransport() {

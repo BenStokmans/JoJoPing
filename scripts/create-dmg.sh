@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Determine repo root relative to this script
+ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$ROOT_DIR"
+
 # ================================
 # CONFIG
 # ================================
@@ -10,9 +14,9 @@ CONFIGURATION="Release"                  # Build configuration
 DESTINATION="generic/platform=macOS"    # Build destination
 BUNDLE_ID="com.bstokmans.JoJoPing"       # Bundle identifier
 APP_NAME="JoJoPing"                      # Final .app name (without .app)
-OUTPUT_DIR="$(pwd)/build"                # Where to put artifacts
+OUTPUT_DIR="$ROOT_DIR/build"             # Where to put artifacts
 
-# Note: Notarization is not covered here; we can add it later if needed.
+# Note: Notarization is not covered here; can be added later if needed.
 
 # ================================
 # FUNCTIONS
@@ -21,11 +25,20 @@ timestamp() { date +"%Y-%m-%d %H:%M:%S"; }
 
 log() { echo "[$(timestamp)] $*"; }
 
-# Read CFBundleShortVersionString from Info.plist in built app
+# Read or set CFBundleShortVersionString from Info.plist in built app
 get_app_version() {
   local app_path="$1"
   /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" \
     "$app_path/Contents/Info.plist" 2>/dev/null || echo "0.0.0"
+}
+
+set_app_version() {
+  local app_path="$1"
+  local new_version="$2"
+  /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $new_version" \
+    "$app_path/Contents/Info.plist" 2>/dev/null || \
+  /usr/libexec/PlistBuddy -c "Add :CFBundleShortVersionString string $new_version" \
+    "$app_path/Contents/Info.plist"
 }
 
 # ================================
@@ -52,7 +65,8 @@ xcodebuild \
   -derivedDataPath "$OUTPUT_DIR/DerivedData" \
   -archivePath "$ARCHIVE_PATH" \
   clean archive \
-  CODE_SIGN_STYLE=Automatic \
+  CODE_SIGN_STYLE=${CI:+Manual} \
+  CODE_SIGNING_ALLOWED=${CI:+NO} \
   SKIP_INSTALL=NO \
   BUILD_LIBRARY_FOR_DISTRIBUTION=NO
 
@@ -76,6 +90,11 @@ APP_PATH="$EXPORT_PATH/$APP_NAME.app"
 # ================================
 # DETERMINE VERSION AND DMG NAME
 # ================================
+if [[ -n "${APP_VERSION:-}" ]]; then
+  log "Overriding app version to: $APP_VERSION"
+  set_app_version "$APP_PATH" "$APP_VERSION"
+fi
+
 VERSION="$(get_app_version "$APP_PATH")"
 DMG_NAME="${APP_NAME}-${VERSION}.dmg"
 DMG_PATH="$OUTPUT_DIR/$DMG_NAME"
@@ -108,7 +127,6 @@ hdiutil create \
 log "DMG created at: $DMG_PATH"
 
 # -------- SUMMARY --------
-echo
 log "Done."
 log "App: $APP_PATH"
 log "DMG: $DMG_PATH"

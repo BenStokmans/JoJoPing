@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E7569A3A2E7FFFB500518734 /* Swifter in Frameworks */ = {isa = PBXBuildFile; productRef = E7569A392E7FFFB500518734 /* Swifter */; };
 		E771308E2E7CA75500DD959B /* MultipeerConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E771308D2E7CA75500DD959B /* MultipeerConnectivity.framework */; };
 /* End PBXBuildFile section */
 
@@ -29,6 +30,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E771308E2E7CA75500DD959B /* MultipeerConnectivity.framework in Frameworks */,
+				E7569A3A2E7FFFB500518734 /* Swifter in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -80,6 +82,7 @@
 			);
 			name = JoJoPing;
 			packageProductDependencies = (
+				E7569A392E7FFFB500518734 /* Swifter */,
 			);
 			productName = JoJoPing;
 			productReference = E77130782E7CA6BA00DD959B /* JoJoPing.app */;
@@ -109,6 +112,9 @@
 			);
 			mainGroup = E771306F2E7CA6BA00DD959B;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				E7569A382E7FFFB500518734 /* XCRemoteSwiftPackageReference "swifter" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = E77130792E7CA6BA00DD959B /* Products */;
 			projectDirPath = "";
@@ -372,6 +378,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		E7569A382E7FFFB500518734 /* XCRemoteSwiftPackageReference "swifter" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/httpswift/swifter";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.5.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		E7569A392E7FFFB500518734 /* Swifter */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E7569A382E7FFFB500518734 /* XCRemoteSwiftPackageReference "swifter" */;
+			productName = Swifter;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = E77130702E7CA6BA00DD959B /* Project object */;
 }
