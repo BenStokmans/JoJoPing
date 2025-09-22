@@ -38,22 +38,24 @@ jobs:
 
             - name: Build Swift App
               run: |
-                  xcodebuild -project JoJoPing.xcodeproj \
+                  mkdir -p build
+                  xcodebuild \
+                    -project JoJoPing.xcodeproj \
                     -scheme JoJoPing \
                     -configuration Release \
+                    -destination "generic/platform=macOS" \
+                    -derivedDataPath build/DerivedData \
                     -archivePath build/JoJoPing.xcarchive \
-                    archive
+                    clean archive \
+                    CODE_SIGN_STYLE=Manual \
+                    CODE_SIGNING_ALLOWED=NO \
+                    SKIP_INSTALL=NO \
+                    BUILD_LIBRARY_FOR_DISTRIBUTION=NO
 
-            - name: Export App
+            - name: Export App from Archive
               run: |
-                  xcodebuild -exportArchive \
-                    -archivePath build/JoJoPing.xcarchive \
-                    -exportPath build/Release \
-                    -exportOptionsPlist scripts/ExportOptions.plist || \
-                  xcodebuild -exportArchive \
-                    -archivePath build/JoJoPing.xcarchive \
-                    -exportPath build/Release \
-                    -exportFormat app
+                  mkdir -p build/Release
+                  cp -R build/JoJoPing.xcarchive/Products/Applications/JoJoPing.app build/Release/
 
             - name: Build Raycast Extension
               working-directory: jojoping-raycast
@@ -135,8 +137,55 @@ jobs:
 
             - name: Create DMG
               run: |
-                  chmod +x scripts/create-dmg.sh
-                  scripts/create-dmg.sh
+                  mkdir -p build/Release
+                  
+                  # Check if we have the app from the artifact
+                  if [[ -d "build/Release/JoJoPing.app" ]]; then
+                      echo "Using app from artifact"
+                      APP_PATH="build/Release/JoJoPing.app"
+                  else
+                      echo "App not found in expected location, listing contents:"
+                      find build -name "*.app" -type d || true
+                      exit 1
+                  fi
+                  
+                  # Use the version from semantic release (strip the 'v' prefix if present)
+                  SEMANTIC_VERSION="${{ steps.previoustag.outputs.tag }}"
+                  VERSION="${SEMANTIC_VERSION#v}"
+                  echo "Using semantic release version: $VERSION"
+                  
+                  # Update the app's Info.plist with the correct version
+                  /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $VERSION" \
+                    "$APP_PATH/Contents/Info.plist" 2>/dev/null || \
+                  /usr/libexec/PlistBuddy -c "Add :CFBundleShortVersionString string $VERSION" \
+                    "$APP_PATH/Contents/Info.plist"
+                  
+                  echo "Updated app version to: $VERSION"
+                  
+                  DMG_NAME="JoJoPing-${VERSION}.dmg"
+                  DMG_PATH="build/$DMG_NAME"
+                  
+                  STAGE="build/dmg_stage"
+                  rm -rf "$STAGE"
+                  mkdir -p "$STAGE"
+                  
+                  # Add Applications symlink
+                  ln -s /Applications "$STAGE/Applications"
+                  
+                  # Copy app into staging
+                  cp -R "$APP_PATH" "$STAGE/"
+                  
+                  # Create the DMG
+                  echo "Creating DMG: $DMG_PATH"
+                  rm -f "$DMG_PATH"
+                  hdiutil create \
+                    -volname "JoJoPing" \
+                    -srcfolder "$STAGE" \
+                    -fs HFS+J \
+                    -format UDZO \
+                    "$DMG_PATH"
+                  
+                  echo "DMG created at: $DMG_PATH"
 
             - name: Upload DMG to release
               uses: softprops/action-gh-release@v2
