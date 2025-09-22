@@ -99,7 +99,10 @@ final class MultipeerManager: NSObject, ObservableObject {
 
     deinit {
         NotificationCenter.default.removeObserver(self)
-        httpServer?.stop()
+        let server = httpServer
+        Task { @MainActor in
+            server?.stop()
+        }
     }
 
     private func createTransport() {
