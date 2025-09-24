@@ -1,6 +1,6 @@
 # Poke Raycast Extension Changelog
 
-## [Initial Release] - 22-09-2025
+## [Initial Release] - {PR_MERGE_DATE}
 
 - Add Poke command to send pokes to nearby Poke peers
 - Support for optional notes with pokes

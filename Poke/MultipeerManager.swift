@@ -137,7 +137,6 @@ final class MultipeerManager: NSObject, ObservableObject {
         }
         advertiser.startAdvertisingPeer()
         browser.startBrowsingForPeers()
-        // Optional: let currently connected peers know we're visible again
         broadcastPresence(isVisible: true)
         // Persist
         isVisible = true
