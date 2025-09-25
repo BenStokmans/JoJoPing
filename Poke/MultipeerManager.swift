@@ -30,8 +30,13 @@ final class MultipeerManager: NSObject, ObservableObject {
         case failed
     }
 
+    struct TimedPokeStatus {
+        let state: PokeDeliveryState
+        let timestamp: Date
+    }
+
     // Last poke delivery status per peer (keyed by displayName)
-    @Published private(set) var lastPokeStatus: [String: PokeDeliveryState] = [:]
+    @Published private(set) var lastPokeStatus: [String: TimedPokeStatus] = [:]
 
     // MARK: - Delivery/Acknowledgement
 
@@ -41,6 +46,9 @@ final class MultipeerManager: NSObject, ObservableObject {
     private var seenPokeIDs: Set<String> = []
     private let ackTimeout: TimeInterval = 3.0
     private let maxAckRetries: Int = 2
+    
+    // Poke status cleanup timeout (5 seconds in nanoseconds)
+    private let pokeStatusCleanupDelay: UInt64 = 5_000_000_000
 
     private let historyTimeLimit: TimeInterval = 24 * 60 * 60 // 24 hours
     private let userDefaults = UserDefaults.standard
@@ -166,10 +174,33 @@ final class MultipeerManager: NSObject, ObservableObject {
 
     func trySendPoke(to peer: MCPeerID, note: String?) async -> Bool {
         // Ensure message is processed by recipient using app-level ACKs with retry
-        lastPokeStatus[peer.displayName] = .sending
+        lastPokeStatus[peer.displayName] = TimedPokeStatus(state: .sending, timestamp: Date())
         let delivered = await sendPokeEnsuringReceipt(to: peer, note: note)
-        lastPokeStatus[peer.displayName] = delivered ? .delivered : .failed
+        lastPokeStatus[peer.displayName] = TimedPokeStatus(
+            state: delivered ? .delivered : .failed, 
+            timestamp: Date()
+        )
+        
+        // Schedule cleanup after 5 seconds
+        Task { [weak self] in
+            try? await Task.sleep(nanoseconds: self?.pokeStatusCleanupDelay ?? 5_000_000_000)
+            await MainActor.run {
+                self?.cleanupOldPokeStatus(for: peer.displayName)
+            }
+        }
+        
         return delivered
+    }
+
+    private func cleanupOldPokeStatus(for peerDisplayName: String) {
+        // Only remove if the status is older than 5 seconds
+        if let status = lastPokeStatus[peerDisplayName] {
+            let elapsed = Date().timeIntervalSince(status.timestamp)
+            if elapsed >= 5.0 {
+                lastPokeStatus.removeValue(forKey: peerDisplayName)
+                log("Cleaned up old poke status for \(peerDisplayName)")
+            }
+        }
     }
 
     private func sendPoke(to peer: MCPeerID, note: String?, id: String) throws {

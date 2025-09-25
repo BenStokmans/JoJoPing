@@ -18,7 +18,7 @@ struct PeersMenu: View {
                     HStack {
                         VStack(alignment: .leading) {
                             Text(peer.displayName).lineLimit(1)
-                            let status = mp.lastPokeStatus[peer.displayName]
+                            let status = mp.lastPokeStatus[peer.displayName]?.state
                             HStack(spacing: 6) {
                                 // Online indicator
                                 Circle()
